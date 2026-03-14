@@ -1,0 +1,77 @@
+# =============================================================================
+# systemd service unit for Polymarket Tail Risk Hunter
+# =============================================================================
+#
+# INSTALLATION:
+#   sudo cp deploy/polymarket-tailrisk.service /etc/systemd/system/
+#   # Edit User=, WorkingDirectory=, EnvironmentFile= to match your setup
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable polymarket-tailrisk
+#   sudo systemctl start polymarket-tailrisk
+#
+# COMMON COMMANDS:
+#   sudo systemctl status polymarket-tailrisk
+#   sudo systemctl stop polymarket-tailrisk
+#   sudo systemctl restart polymarket-tailrisk
+#   sudo journalctl -u polymarket-tailrisk -f          # follow logs
+#   sudo journalctl -u polymarket-tailrisk --since today
+#
+# =============================================================================
+
+[Unit]
+Description=Polymarket Tail Risk Hunter — Autonomous Prediction Market Bot
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+# ── Identity ──────────────────────────────────────────────────────────────────
+# Replace 'ubuntu' with the user that owns the repo
+User=ubuntu
+Group=ubuntu
+
+# ── Working directory ─────────────────────────────────────────────────────────
+# Replace with the absolute path to your cloned repo
+WorkingDirectory=/home/ubuntu/polymarket-tail-risk-hunter
+
+# ── Environment ───────────────────────────────────────────────────────────────
+# Use the virtualenv Python
+Environment="PATH=/home/ubuntu/polymarket-tail-risk-hunter/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+# Load secrets from .env file (gitignored)
+EnvironmentFile=/home/ubuntu/polymarket-tail-risk-hunter/.env
+
+# ── Process ───────────────────────────────────────────────────────────────────
+ExecStart=/home/ubuntu/polymarket-tail-risk-hunter/venv/bin/python main_loop.py
+ExecStop=/bin/kill -TERM $MAINPID
+
+# Give the bot up to 30 seconds to finish its current cycle and cancel orders
+TimeoutStopSec=30
+
+# ── Restart policy ────────────────────────────────────────────────────────────
+# Restart on unexpected exit (not on clean stop or SIGTERM)
+Restart=on-failure
+RestartSec=30s
+
+# ── Resource limits ───────────────────────────────────────────────────────────
+# Prevent runaway memory usage
+MemoryMax=1G
+# Limit open file descriptors (DB + logs + sockets)
+LimitNOFILE=65536
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+# systemd journal captures stdout/stderr
+# The bot also writes structured JSON logs to logs/bot.log via loguru
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=polymarket-tailrisk
+
+# ── Security hardening (optional, comment out if causing issues) ──────────────
+# PrivateTmp=true
+# NoNewPrivileges=true
+# ProtectSystem=strict
+# ReadWritePaths=/home/ubuntu/polymarket-tail-risk-hunter/data
+# ReadWritePaths=/home/ubuntu/polymarket-tail-risk-hunter/logs
+
+[Install]
+WantedBy=multi-user.target
