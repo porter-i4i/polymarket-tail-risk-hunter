@@ -85,14 +85,12 @@ class Notifier:
         await self.send(msg)
 
     async def phase_change_alert(self, from_phase: int, to_phase: int,
-                                 reason: str, cal_score: float = None) -> None:
-        msg = (
-            f"🔄 Phase Change: {from_phase} → {to_phase}\n"
-            f"Reason: {reason}\n"
-            f"Cal Score: {cal_score:.3f}" if cal_score is not None else
+                                 reason: str, cal_score: float | None = None) -> None:
+        base = (
             f"🔄 Phase Change: {from_phase} → {to_phase}\n"
             f"Reason: {reason}"
         )
+        msg = base + (f"\nCal Score: {cal_score:.3f}" if cal_score is not None else "")
         await self.send(msg)
 
     async def circuit_breaker_alert(self, rolling_pnl: float, threshold: float) -> None:

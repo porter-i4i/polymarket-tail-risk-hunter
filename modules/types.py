@@ -4,7 +4,6 @@ Every inter-module data exchange uses these types.
 """
 from dataclasses import dataclass, field
 from enum import IntEnum, Enum
-from typing import Optional
 from datetime import datetime
 
 # === ENUMS ===

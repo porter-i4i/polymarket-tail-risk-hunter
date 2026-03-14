@@ -206,6 +206,8 @@ class CalibrationTracker:
     def sanity_check(self, scores_today: list) -> bool:
         """Sanity gate for trading decisions.
 
+        Accepts both RawAIScore dataclass instances and plain dicts.
+
         Returns False (fail) if:
         - buy rate > 40% (too many buys)
         - avg p50 > 15 (predictions too confident)
@@ -213,15 +215,25 @@ class CalibrationTracker:
         if not scores_today:
             return True
 
+        def _get(s, key, default=None):
+            """Attribute-safe getter: works on both dicts and dataclasses."""
+            if isinstance(s, dict):
+                return s.get(key, default)
+            return getattr(s, key, default)
+
         buy_count = sum(
             1 for s in scores_today
-            if s.get("recommendation", "SKIP") in ("BUY_YES", "BUY_NO")
+            if _get(s, "recommendation", "SKIP") in ("BUY_YES", "BUY_NO")
         )
         buy_rate = buy_count / len(scores_today)
         if buy_rate > 0.40:
             return False
 
-        p50_values = [s.get("p50", 0) for s in scores_today if s.get("p50") is not None]
+        p50_values = [
+            _get(s, "p50", 0)
+            for s in scores_today
+            if _get(s, "p50") is not None
+        ]
         if p50_values:
             avg_p50 = sum(p50_values) / len(p50_values)
             if avg_p50 > 15:

@@ -93,6 +93,9 @@ def load_config() -> dict:
     cfg["TELEGRAM_BOT_TOKEN"] = os.environ.get("TELEGRAM_BOT_TOKEN", "")
     cfg["TELEGRAM_CHAT_ID"] = os.environ.get("TELEGRAM_CHAT_ID", "")
 
+    # --- Database ---
+    cfg["DB_PATH"] = os.environ.get("DB_PATH", "data/polybot.db")
+
     # --- Mode (bool / int) ---
     cfg["DRY_RUN"] = _parse_bool(os.environ.get("DRY_RUN", "true"))
     cfg["CYCLE_INTERVAL_SECONDS"] = _parse_int(os.environ.get("CYCLE_INTERVAL_SECONDS", "60"), 60)
@@ -133,7 +136,7 @@ def load_config() -> dict:
     cfg["CALIBRATION_METHOD"] = os.environ.get("CALIBRATION_METHOD", "platt")
     cfg["CALIBRATION_MIN_SAMPLES"] = _parse_int(os.environ.get("CALIBRATION_MIN_SAMPLES", "100"), 100)
     cfg["CALIBRATION_RETRAIN_EVERY"] = _parse_int(os.environ.get("CALIBRATION_RETRAIN_EVERY", "50"), 50)
-    cfg["DEBIAS_ENABLED"] = _parse_bool(os.environ.get("DEBIAS_ENABLED", "true"))
+    # Feature flag checked in main_loop: ENABLE_DEBIASER (see FEATURE FLAGS section below)
     cfg["USE_CONSERVATIVE_ESTIMATE"] = _parse_bool(os.environ.get("USE_CONSERVATIVE_ESTIMATE", "true"))
     cfg["SCORING_CACHE_DEFAULT_TTL"] = _parse_int(os.environ.get("SCORING_CACHE_DEFAULT_TTL", "1800"), 1800)
     cfg["MIN_PREDICTIONS_PHASE2"] = _parse_int(os.environ.get("MIN_PREDICTIONS_PHASE2", "200"), 200)

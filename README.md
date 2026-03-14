@@ -121,9 +121,9 @@ bound — not point estimate — to prevent upgrades on lucky streaks.
 
 ## Safety Features
 
-- **Kill switch** — 11 conditions (drawdown, consecutive losses, calibration collapse, AI error rate, heartbeat gap, cycle gap, balance mismatch)
+- **Kill switch** — 12 conditions (drawdown, consecutive losses, calibration collapse, AI error rate, heartbeat gap, cycle gap, balance mismatch)
 - **Circuit breaker** — trips on 15% loss in 7 days; runs exit-only mode
-- **Sanity gate** — halts if buy rate > 50% or average probability > 15%
+- **Sanity gate** — halts if buy rate > 40% or average probability > 15%
 - **Deduplication** — never bets the same `condition_id` twice
 - **Adverse selection** — skips toxic flow / imbalanced books
 - **ADR-006** — clob_write max 1 attempt (never duplicate orders)

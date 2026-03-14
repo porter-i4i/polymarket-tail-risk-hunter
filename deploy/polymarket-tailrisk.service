@@ -26,7 +26,7 @@ StartLimitIntervalSec=300
 StartLimitBurst=5
 
 [Service]
-# ── Identidy ──────────────────────────────────────────────────────────────────
+# ── Identity ──────────────────────────────────────────────────────────────────
 # Replace 'ubuntu' with the user that owns the repo
 User=ubuntu
 Group=ubuntu
